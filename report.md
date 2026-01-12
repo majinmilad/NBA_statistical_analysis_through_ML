@@ -34,7 +34,7 @@ FTr = FTA / FGA
 At first glance, historical analysis of one of the more relevant advanced stats showed an interesting trend. True shooting percentage seemed to dip to an all-time low late 1990s, before steadily rising to an all time high in the current game. However, the statistics are only useful when presented as relative to how other teams we performing at the time, and that is where the model is of use.
 
 <p align="center">
-<img height="300" alt="TS avg over time save for later" src="https://github.com/user-attachments/assets/8070fa0e-34a7-40b2-9223-7302de87215b" />
+  <img src="images/TS avg over time save for later.png" height="300">
 </p>
 
 ## Gradient Boosted Trees to Extract Feature Importance
@@ -46,7 +46,7 @@ Many machine learning algorithms can be used, not only to classify or predict th
 To this purpose, a gradient boosted decision tree was implemented using HistGradientBoostingClassifier from the extremely canonical scikit-learn library. This is the library's equivalence to the popular and notoriously effective XGBoost algorithm. However, while decision trees like these algorithms are often very interpretable, unlike XGBoost, HistGradientBoostingClassifier does not have direct functionality for interpreting feature importance and so a method called permutation importance is performed instead. To build our model a temporal 80-20% test train split was done, providing ample data for the model to learn from and then be evaluated on. The model was trained to classify a game winner based on the game's retrospective data, and then, upon learning successful classification abilities, latent features are derived to investigate which are being used as the model's effective predictors of success. In order to have any trust in the latent features a model discovers, however, you must first trust its effectivness. An evaluation of the model showed of an **accuracy of 82%**, with baseline models outputting around 60%, and an **ROC AUC of 0.9054**. A confusion matrix showed strong numbers and good results and symmetrical errors, which is important because asymmetric errors might imply a bias toward predicting “win” or “loss.”
 
 <p align="center">
-<img height="400" alt="Confusion matrix on original model run" src="https://github.com/user-attachments/assets/a80cb53c-b0f4-4640-8344-2b6bc6f19a7e" />
+  <img src="images/Confusion matrix on original model run.png" height="400">
 </p>
 
 ### Results
@@ -54,13 +54,13 @@ To this purpose, a gradient boosted decision tree was implemented using HistGrad
 As stated above, a method called permutation importance is performed on the HistGradientBoostingClassifier in order to deduce feature importance within the model. This is done by selecting single features at a time, randomly scrambling their values to kill their signal, and then the decrease in a model's score is measured and recorded. By performing this on all the features involved (permutating) and comparing mean accuracy, you can observe which feature had the most impact on model performance relative to the others.
 
 <p align="center">
-<img height="375" alt="Permutation feature importance" src="https://github.com/user-attachments/assets/883224e6-48c2-4cc6-9fff-029071c86838" />
+  <img src="images/Permutation feature importance.png" height="375">
 </p>
 
 After performing permutation importance on the model, true shooting percentage was shown to have the largest influence by far at a delta of 25.3%. Defensive rebounding came second, at 11.2%, followed by turnovers, offensive rebounds, and steals. The model does view the advanced efficiency stat and rebounding as being most influential, however it does leave turn over percentage off its list of importance in lieu of total turnovers. It is most likely that there is significant overlap in these signals and due to the directional, hierarchical flow of decision trees, once the tree has captured most of that overlapping signal it will view the impact of the overlapping features that follow very minimally. This can best be rectified by ablating these overlapping features and noting they're significance when acting in isolation.
 
 <p align="center">
-<img height="375" alt="Decision surface DREB vs TS" src="https://github.com/user-attachments/assets/9e685a03-b1bd-4eb9-b5b4-d3f441a61429" />
+  <img src="images/Decision surface DREB vs TS.png" height="375">
 </p>
 
 The decision boundary of the model can be observed in this plotting of rebounds against true shooting percentage. A sort of linear boundry with a steep negative slope can been seen, past which the model observes a win. This implementation is certainly crude relative to what can be done with iterating over with the same tools. Overall though, this model operates as a proof of concept of the notion of using machine learning as a method of uncovering latent features within data. Other methods, on top of feature importance from decision trees, include matrix factorization with collaborative filtering and principle component analysis, although these techniques have varying levels of interpretability. While a powerful tool in prediciting outcomes, machine learning is only as good as the quality of its features in which it is trained upon, and in a sort of bootstrap paradoxical way, machine learning can also be used to identify which features those may be.
